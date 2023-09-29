@@ -8,3 +8,9 @@ from dataclasses import dataclass
 class Engine:
     volume: float
     pistons: int
+
+
+# class Engine:
+#     def __init__(self, volume, pistons):
+#         self.volume = volume
+#         self.pistons = pistons
