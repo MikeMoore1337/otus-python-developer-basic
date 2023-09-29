@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import ABC
 from exceptions import LowFuelError, NotEnoughFuel
 
 
@@ -9,7 +9,6 @@ class Vehicle(ABC):
         self.fuel = fuel
         self.fuel_consumption = fuel_consumption
 
-    @abstractmethod
     def start(self):
         if not self.started:
             if self.fuel > 0:
@@ -17,7 +16,6 @@ class Vehicle(ABC):
             else:
                 raise LowFuelError
 
-    @abstractmethod
     def move(self, distance):
         if self.started:
             required_fuel = self.fuel_consumption * distance
