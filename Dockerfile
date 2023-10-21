@@ -18,4 +18,6 @@ RUN poetry install
 
 COPY homework_03 .
 
+EXPOSE 8000
+
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0"]
