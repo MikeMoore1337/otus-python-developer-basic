@@ -16,7 +16,7 @@ COPY pyproject.toml poetry.lock ./
 
 RUN poetry install
 
-COPY homework_03 .
+COPY . .
 
 EXPOSE 8000
 
