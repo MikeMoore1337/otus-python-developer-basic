@@ -42,6 +42,7 @@ class User(Base):
 
     posts = relationship("Post", back_populates="user")
     address = relationship("Address", uselist=False, back_populates="user")
+    company_id = Column(Integer, ForeignKey("companies.id"))
     company = relationship("Company", uselist=False, back_populates="user")
 
 
