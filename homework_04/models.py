@@ -7,23 +7,27 @@
 для модели Post обязательными являются user_id, title, body
 создайте связи relationship между моделями: User.posts и Post.user
 """
+
 import os
 
-from sqlalchemy import Column, ForeignKey, Integer, MetaData, String, create_engine
-from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import Column, ForeignKey, Integer, MetaData, String
+from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy.orm import relationship
 
-PG_CONN_URI = os.environ.get("SQLALCHEMY_PG_CONN_URI") or "postgresql+asyncpg://postgres:password@localhost/postgres"
+PG_CONN_URI = (
+        os.environ.get("SQLALCHEMY_PG_CONN_URI")
+        or "postgresql+asyncpg://postgres:password@localhost/postgres"
+)
 
-engine = create_engine(PG_CONN_URI, echo=True, future=True)
+engine = create_async_engine(PG_CONN_URI, echo=True)
 metadata = MetaData()
 Base = declarative_base(metadata=metadata)
-Session = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
+AsyncSession = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
@@ -34,10 +38,10 @@ class User(Base):
 
 
 class Post(Base):
-    __tablename__ = 'posts'
+    __tablename__ = "posts"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
 
