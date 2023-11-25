@@ -19,6 +19,7 @@ PG_CONN_URI = os.environ.get("SQLALCHEMY_PG_CONN_URI") or "postgresql+asyncpg://
 engine = create_engine(PG_CONN_URI, echo=True, future=True)
 metadata = MetaData()
 Base = declarative_base(metadata=metadata)
+Session = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
 
 
 class User(Base):
@@ -41,6 +42,3 @@ class Post(Base):
     body = Column(String, nullable=False)
 
     user = relationship("User", back_populates="posts")
-
-
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine, class_=AsyncSession)
