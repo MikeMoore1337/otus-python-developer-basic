@@ -26,6 +26,17 @@ Base = declarative_base(metadata=metadata)
 AsyncSession = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
+class Address(Base):
+    __tablename__ = "addresses"
+
+    id = Column(Integer, primary_key=True, index=True)
+    city = Column(String)
+    street = Column(String)
+    suite = Column(String)
+    zipcode = Column(String)
+    # добавьте другие поля, если необходимо
+
+
 class User(Base):
     __tablename__ = "users"
 
@@ -33,8 +44,9 @@ class User(Base):
     name = Column(String, nullable=False)
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
+    address_id = Column(Integer, ForeignKey("addresses.id"))
 
-    posts = relationship("Post", back_populates="user")
+    address = relationship("Address")
 
 
 class Post(Base):
