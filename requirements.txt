@@ -1,7 +1,10 @@
 aiohttp==3.9.0
+anyio==3.7.1
+asyncio==3.4.3
 fastapi==0.104.0
 uvicorn==0.23.2
 pydantic==2.4.2
+poetry==1.7.1
 SQLAlchemy==2.0.23
 flake8==6.1.0
 black==23.11.0
