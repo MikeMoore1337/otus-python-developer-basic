@@ -36,7 +36,9 @@ async def fetch_data_and_add_to_db(session, users_data, posts_data):
 
 
 async def add_data_to_db(session, model, data):
-    instance = model(**data)
+    # Извлечение только нужных полей
+    valid_keys = [key for key in data.keys() if key in model.__table__.columns]
+    instance = model(**{key: data[key] for key in valid_keys})
     session.add(instance)
 
 
