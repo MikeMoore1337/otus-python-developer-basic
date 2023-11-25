@@ -44,7 +44,9 @@ class User(Base):
     website = Column(String, nullable=False)
     posts = relationship("Post", back_populates="user")
     address_id = Column(Integer, ForeignKey("address.id"))
-    addresses = relationship("Address", secondary=association_table, back_populates="user")
+    addresses = relationship(
+        "Address", secondary=association_table, back_populates="user"
+    )
     company_id = Column(Integer, ForeignKey("company.id"))
     company = relationship("Company", back_populates="user")
 
