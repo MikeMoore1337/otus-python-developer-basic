@@ -29,12 +29,22 @@ async def fetch_data_and_add_to_db(session, users_data, posts_data):
     post_instances = []
 
     for user_data in users_data:
-        user_instance = User(**user_data)
+        # Извлекаем вложенные данные из user_data
+        address_data = user_data.pop("address", None)
+
+        # Создаем объект Address, если есть данные
+        if address_data:
+            address_instance = Address(**address_data)
+        else:
+            address_instance = None
+
+        # Создаем объект User, передавая в него address_instance
+        user_instance = User(address=address_instance, **user_data)
         user_instances.append(user_instance)
 
     for post_data in posts_data:
         # Извлекаем user_id из данных поста
-        user_id = post_data.pop('user_id', None)
+        user_id = post_data.pop("userId", None)
 
         # Если user_id есть, пытаемся получить пользователя из базы данных
         if user_id is not None:
@@ -62,26 +72,9 @@ async def async_main():
 
         # Загрузка данных и добавление их в базу данных
         users_data, posts_data = await asyncio.gather(
-            fetch_users_data(),
-            fetch_posts_data()
+            fetch_users_data(), fetch_posts_data()
         )
         await fetch_data_and_add_to_db(session, users_data, posts_data)
-
-
-# async def async_main():
-#     async with AsyncSession() as session:
-#         # Инициализация базы данных
-#         await init_db()
-#
-#         # Загрузка данных и добавление их в базу данных
-#         users_data, posts_data = await asyncio.gather(
-#             fetch_users_data(),
-#             fetch_posts_data()
-#         )
-#         await fetch_data_and_add_to_db(session, users_data, posts_data)
-#
-#         # Закрытие соединения с базой данных
-#         await session.commit()
 
 
 def main():

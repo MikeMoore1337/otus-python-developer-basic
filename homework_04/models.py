@@ -16,8 +16,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
 PG_CONN_URI = (
-        os.environ.get("SQLALCHEMY_PG_CONN_URI")
-        or "postgresql+asyncpg://postgres:password@localhost/postgres"
+    os.environ.get("SQLALCHEMY_PG_CONN_URI")
+    or "postgresql+asyncpg://postgres:password@localhost/postgres"
 )
 
 engine = create_async_engine(PG_CONN_URI, echo=True)
