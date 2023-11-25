@@ -56,7 +56,8 @@ async def add_data_to_db(session, model, data):
         # Установка user_id для поста
         instance = model(user_id=user.id, **{key: data[key] for key in valid_keys})
 
-        session.add(instance)
+    session.add(instance)
+    await session.flush()  # Гарантирует, что запись добавлена в базу данных
 
 
 async def async_main():
