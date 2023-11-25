@@ -30,10 +30,12 @@ class Address(Base):
     __tablename__ = "addresses"
 
     id = Column(Integer, primary_key=True, index=True)
-    city = Column(String)
-    street = Column(String)
-    suite = Column(String)
-    zipcode = Column(String)
+    city = Column(String, nullable=False)
+    street = Column(String, nullable=False)
+    suite = Column(String, nullable=False)
+    lat = Column(String, nullable=False)
+    lng = Column(String, nullable=False)
+    zipcode = Column(String, nullable=False)
 
 
 class User(Base):
