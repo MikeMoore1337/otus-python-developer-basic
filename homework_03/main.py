@@ -1,8 +1,7 @@
 from typing import Annotated
 
-from fastapi import FastAPI, Query, Path
-
-from views import items_router, calc_router, pong_router
+from fastapi import FastAPI, Query
+from views import calc_router, items_router, pong_router
 
 app = FastAPI()
 app.include_router(items_router)

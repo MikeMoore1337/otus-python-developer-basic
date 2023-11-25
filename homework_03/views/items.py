@@ -45,9 +45,4 @@ def create_item(item: CreateItem):
 
 @router.get("/{item_id}/")
 def get_item(item_id: int):
-    return {
-        "data": {
-            "id": item_id,
-            "name": f"foobar_{item_id}"
-        }
-    }
+    return {"data": {"id": item_id, "name": f"foobar_{item_id}"}}

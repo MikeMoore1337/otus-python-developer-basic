@@ -34,7 +34,8 @@ class TestCar:
     def test_car_class_doesnt_have_engine_instance(self):
         engine_attr = getattr(module_car.Car, "engine", None)
         if engine_attr:
-            assert (not isinstance(engine_attr, module_engine.Engine)), "please don't set mutables (instances) on the class-level"
+            assert (not isinstance(engine_attr, module_engine.Engine)), \
+                "please don't set mutables (instances) on the class-level"
 
     def test_car_is_based_only_on_vehicle(self):
         """

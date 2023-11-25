@@ -1,0 +1,12 @@
+aiohttp==3.9.0
+fastapi==0.104.0
+uvicorn==0.23.2
+pydantic==2.4.2
+SQLAlchemy==2.0.23
+flake8==6.1.0
+black==23.11.0
+isort==5.12.0
+
+# isort ./homework_01
+# black ./homework_01
+# flake8 --config .flake8
