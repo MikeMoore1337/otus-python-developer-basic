@@ -35,34 +35,35 @@ async def fetch_data_and_add_to_db(session, users_data, posts_data):
     await asyncio.gather(*tasks)
 
 
-async def add_data_to_db(session, model, data):
-    # Извлечение только нужных полей
-    valid_keys = [key for key in data.keys() if key in model.__table__.columns]
+async def fetch_data_and_add_to_db(session, users_data, posts_data):
+    user_instances = []
+    post_instances = []
 
-    # Создание объекта модели
-    instance = model(**{key: data[key] for key in valid_keys})
+    for user_data in users_data:
+        user_instance = User(**user_data)
+        user_instances.append(user_instance)
 
-    # Добавление user в базу данных, если это User модель
-    if model == User:
-        session.add(instance)
-    elif model == Post:
-        # Получение user_id из переданных данных или выбор существующего пользователя
-        user_id = data.get('user_id')
-        user = await session.get(User, user_id)
+    for post_data in posts_data:
+        # Извлекаем user_id из данных поста
+        user_id = post_data.pop('user_id', None)
 
-        if not user:
-            # Создание нового пользователя, если его нет в базе данных
-            user = User(**{key: data[key] for key in valid_keys if key != 'user_id'})
-            session.add(user)
+        # Если user_id есть, пытаемся получить пользователя из базы данных
+        if user_id is not None:
+            user_instance = await session.get(User, user_id)
+        else:
+            user_instance = None
 
-        # Установка user_id для поста
-        instance.user_id = user.id
+        # Если пользователя нет, создаем нового
+        if user_instance is None:
+            user_instance = User(**user_data)
+            session.add(user_instance)
 
-    # Фиксация объектов в базу данных
-    await session.flush()
+        # Создаем пост и устанавливаем связь с пользователем
+        post_instance = Post(**post_data, user=user_instance)
+        post_instances.append(post_instance)
 
-    # Добавление объекта в сеанс после фиксации
-    session.add(instance)
+    session.add_all(user_instances + post_instances)
+    await session.commit()
 
 
 async def async_main():
@@ -77,8 +78,21 @@ async def async_main():
         )
         await fetch_data_and_add_to_db(session, users_data, posts_data)
 
-        # Закрытие соединения с базой данных
-        await session.commit()
+
+# async def async_main():
+#     async with AsyncSession() as session:
+#         # Инициализация базы данных
+#         await init_db()
+#
+#         # Загрузка данных и добавление их в базу данных
+#         users_data, posts_data = await asyncio.gather(
+#             fetch_users_data(),
+#             fetch_posts_data()
+#         )
+#         await fetch_data_and_add_to_db(session, users_data, posts_data)
+#
+#         # Закрытие соединения с базой данных
+#         await session.commit()
 
 
 def main():
