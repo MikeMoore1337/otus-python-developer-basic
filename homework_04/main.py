@@ -16,7 +16,7 @@
 import asyncio
 
 from jsonplaceholder_requests import fetch_posts_data, fetch_users_data
-from models import Base, Post, AsyncSession, User, engine
+from models import AsyncSession, Base, Post, User, engine
 
 
 async def init_db():
@@ -24,28 +24,36 @@ async def init_db():
         await conn.run_sync(Base.metadata.create_all)
 
 
-async def add_data_to_db(users_data, posts_data):
-    async with AsyncSession() as session:
-        async with session.begin():
-            for user_data in users_data:
-                user = User(**user_data)
-                session.add(user)
+async def fetch_data_and_add_to_db(session, users_data, posts_data):
+    tasks = [
+                add_data_to_db(session, User, user_data)
+                for user_data in users_data
+            ] + [
+                add_data_to_db(session, Post, post_data)
+                for post_data in posts_data
+            ]
+    await asyncio.gather(*tasks)
 
-            for post_data in posts_data:
-                post = Post(**post_data)
-                session.add(post)
+
+async def add_data_to_db(session, model, data):
+    instance = model(**data)
+    session.add(instance)
 
 
 async def async_main():
-    users_data, posts_data = await asyncio.gather(
-        fetch_users_data(),
-        fetch_posts_data(),
-    )
+    async with AsyncSession() as session:
+        # Инициализация базы данных
+        await init_db()
 
-    await init_db()
-    await add_data_to_db(users_data, posts_data)
+        # Загрузка данных и добавление их в базу данных
+        users_data, posts_data = await asyncio.gather(
+            fetch_users_data(),
+            fetch_posts_data()
+        )
+        await fetch_data_and_add_to_db(session, users_data, posts_data)
 
-    print("Data added to the database")
+        # Закрытие соединения с базой данных
+        await session.commit()
 
 
 def main():
