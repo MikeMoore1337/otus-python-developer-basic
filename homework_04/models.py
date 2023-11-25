@@ -36,11 +36,11 @@ class Geo(Base):
 
 
 class Address(Base):
-    __tablename__ = "address"
+    __tablename__ = "addresses"
 
-    user_id = Column(Integer, ForeignKey("users.id"))
-    user = relationship("User", back_populates="address")
     id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
+    user = relationship("User", back_populates="address", foreign_keys=[user_id])
     street = Column(String, nullable=False)
     suite = Column(String, nullable=False)
     city = Column(String, nullable=False)
@@ -69,7 +69,12 @@ class User(Base):
     website = Column(String, nullable=False)
     posts = relationship("Post", back_populates="user")
     address_id = Column(Integer, ForeignKey("address.id"))
-    address = relationship("Address", back_populates="user")
+    address = relationship(
+        "Address",
+        back_populates="user",
+        foreign_keys=[id],
+        primaryjoin="User.id == Address.user_id",
+    )
     company_id = Column(Integer, ForeignKey("company.id"))
     company = relationship("Company", back_populates="user")
 
