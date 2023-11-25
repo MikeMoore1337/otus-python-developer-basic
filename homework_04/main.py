@@ -16,7 +16,16 @@
 import asyncio
 
 from jsonplaceholder_requests import fetch_posts_data, fetch_users_data
-from models import Address, AsyncSession, Base, Post, User, engine
+
+from homework_04.models import (
+    Address,
+    AsyncSession,
+    Base,
+    Post,
+    User,
+    async_session,
+    engine,
+)
 
 
 async def init_db():
@@ -65,6 +74,32 @@ async def fetch_data_and_add_to_db(session, users_data, posts_data):
     await session.commit()
 
 
+async def add_users_to_db(users_data):
+    for user_data in users_data:
+        user = User(
+            id=user_data["id"],
+            name=user_data["name"],
+            username=user_data["username"],
+            email=user_data["email"],
+        )
+        async_session.add(user)
+
+    await async_session.commit()
+
+
+async def add_posts_to_db(posts_data):
+    for post_data in posts_data:
+        post = Post(
+            id=post_data["id"],
+            user_id=post_data["userId"],
+            title=post_data["title"],
+            body=post_data["body"],
+        )
+        async_session.add(post)
+
+    await async_session.commit()
+
+
 async def async_main():
     async with AsyncSession() as session:
         # Инициализация базы данных
@@ -76,11 +111,12 @@ async def async_main():
         )
         await fetch_data_and_add_to_db(session, users_data, posts_data)
 
-        # Закрытие соединения с базой данных
-        await session.commit()
+    # Закрытие соединения с БД
+    await async_session.close()
 
 
 def main():
+    # Запуск асинхронного цикла
     asyncio.run(async_main())
 
 

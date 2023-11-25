@@ -10,7 +10,7 @@
 
 import os
 
-from sqlalchemy import Column, ForeignKey, Integer, MetaData, String, Table
+from sqlalchemy import Column, ForeignKey, Integer, String, Table
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import configure_mappers, relationship
@@ -21,76 +21,74 @@ PG_CONN_URI = (
 )
 
 engine = create_async_engine(PG_CONN_URI, echo=True)
-metadata = MetaData()
-Base = declarative_base()
-AsyncSession = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
-association_table = Table(
-    "user_address_association",
-    Base.metadata,
-    Column("user_id", Integer, ForeignKey("users.id")),
-    Column("address_id", Integer, ForeignKey("addresses.id")),
+# Создание базового класса для декларативных моделей
+Base = declarative_base()
+
+# Создание сессии для взаимодействия с базой данных
+AsyncSession = async_sessionmaker(
+    bind=engine, class_=AsyncSession, expire_on_commit=False
 )
+async_session = AsyncSession()
 
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
-    phone = Column(String, nullable=False)
-    website = Column(String, nullable=False)
+
     posts = relationship("Post", back_populates="user")
-    address_id = Column(Integer, ForeignKey("address.id"))
-    addresses = relationship(
-        "Address", secondary=association_table, back_populates="user"
-    )
-    company_id = Column(Integer, ForeignKey("company.id"))
-    company = relationship("Company", back_populates="user")
+    address = relationship("Address", uselist=False, back_populates="user")
+    company = relationship("Company", uselist=False, back_populates="user")
 
 
 class Post(Base):
     __tablename__ = "posts"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
+
     user = relationship("User", back_populates="posts")
 
 
 class Address(Base):
     __tablename__ = "addresses"
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("user.id"))
-    user = relationship("User", secondary=association_table, back_populates="addresses")
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey("users.id"))
     street = Column(String, nullable=False)
     suite = Column(String, nullable=False)
     city = Column(String, nullable=False)
     zipcode = Column(String, nullable=False)
-    geo_id = Column(Integer, ForeignKey("geo.id"))
-    geo = relationship("Geo", back_populates="address")
+    geo = relationship("Geo", uselist=False, back_populates="address")
+
+    user = relationship("User", back_populates="address")
 
 
 class Geo(Base):
     __tablename__ = "geo"
 
-    address = relationship("Address", back_populates="geo")
     id = Column(Integer, primary_key=True, index=True)
     lat = Column(String, nullable=False)
     lng = Column(String, nullable=False)
 
+    address = relationship("Address", back_populates="geo")
+
 
 class Company(Base):
-    __tablename__ = "company"
+    __tablename__ = "companies"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     catch_phrase = Column(String, nullable=False)
     bs = Column(String, nullable=False)
+
+    user = relationship("User", back_populates="company")
 
 
 configure_mappers()
