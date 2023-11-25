@@ -22,7 +22,7 @@ PG_CONN_URI = (
 
 engine = create_async_engine(PG_CONN_URI, echo=True)
 metadata = MetaData()
-Base = declarative_base(metadata=metadata)
+Base = declarative_base()
 AsyncSession = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
 
 
@@ -57,7 +57,7 @@ class Company(Base):
 
 
 class User(Base):
-    __tablename__ = "user"
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
