@@ -47,6 +47,8 @@ class User(Base):
 
     address = relationship("Address")
 
+    posts = relationship("Post", back_populates="user")
+
 
 class Post(Base):
     __tablename__ = "posts"
@@ -56,4 +58,4 @@ class Post(Base):
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
 
-    user = relationship("User", back_populates="posts", uselist=False)
+    user = relationship("User", back_populates="posts")
