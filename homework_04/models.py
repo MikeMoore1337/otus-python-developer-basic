@@ -66,6 +66,8 @@ class User(Base):
     phone = Column(String, nullable=False)
     website = Column(String, nullable=False)
 
+    posts = relationship("Post", back_populates="user")
+
     address_id = Column(Integer, ForeignKey("address.id"))
     address = relationship("Address", back_populates="user")
 
