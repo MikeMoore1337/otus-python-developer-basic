@@ -39,9 +39,13 @@ async def add_data_to_db(session, model, data):
     # Извлечение только нужных полей
     valid_keys = [key for key in data.keys() if key in model.__table__.columns]
 
+    # Создание объекта модели, но без добавления в сеанс
+    instance = model(**{key: data[key] for key in valid_keys})
+
     # Добавление user в базу данных, если это User модель
     if model == User:
-        instance = model(**{key: data[key] for key in valid_keys})
+        session.add(instance)
+        await session.flush()  # Гарантирует, что пользователь получает ID
     elif model == Post:
         # Получение user_id из переданных данных или выбор существующего пользователя
         user_id = data.get('user_id')
@@ -53,10 +57,10 @@ async def add_data_to_db(session, model, data):
             session.add(user)
             await session.flush()  # Гарантирует, что пользователь получает ID
 
-        # Установка user_id для поста
-        instance = model(user_id=user.id, **{key: data[key] for key in valid_keys})
+        # Установка user_id для поста и добавление в сеанс
+        instance.user_id = user.id
+        session.add(instance)
 
-    session.add(instance)
     await session.flush()  # Гарантирует, что запись добавлена в базу данных
 
 
