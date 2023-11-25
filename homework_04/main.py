@@ -25,17 +25,6 @@ async def init_db():
 
 
 async def fetch_data_and_add_to_db(session, users_data, posts_data):
-    tasks = [
-                add_data_to_db(session, User, user_data)
-                for user_data in users_data
-            ] + [
-                add_data_to_db(session, Post, post_data)
-                for post_data in posts_data
-            ]
-    await asyncio.gather(*tasks)
-
-
-async def fetch_data_and_add_to_db(session, users_data, posts_data):
     user_instances = []
     post_instances = []
 
