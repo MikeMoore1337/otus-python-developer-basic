@@ -72,9 +72,13 @@ async def async_main():
 
         # Загрузка данных и добавление их в базу данных
         users_data, posts_data = await asyncio.gather(
-            fetch_users_data(), fetch_posts_data()
+            fetch_users_data(),
+            fetch_posts_data()
         )
         await fetch_data_and_add_to_db(session, users_data, posts_data)
+
+        # Закрытие соединения с базой данных
+        await session.commit()
 
 
 def main():

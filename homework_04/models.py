@@ -34,7 +34,6 @@ class Address(Base):
     street = Column(String)
     suite = Column(String)
     zipcode = Column(String)
-    # добавьте другие поля, если необходимо
 
 
 class User(Base):
@@ -57,4 +56,4 @@ class Post(Base):
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
 
-    user = relationship("User", back_populates="posts")
+    user = relationship("User", back_populates="posts", uselist=False)
