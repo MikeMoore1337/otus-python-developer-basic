@@ -37,6 +37,10 @@ class Address(Base):
     lng = Column(String, nullable=False)
     zipcode = Column(String, nullable=False)
 
+    def __init__(self, **kwargs):
+        self.geo = {"lat": kwargs.get("lat"), "lng": kwargs.get("lng")}
+        super().__init__(**kwargs)
+
 
 class User(Base):
     __tablename__ = "users"
