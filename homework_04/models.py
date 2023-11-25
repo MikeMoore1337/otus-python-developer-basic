@@ -29,6 +29,7 @@ AsyncSession = async_sessionmaker(engine, expire_on_commit=False, class_=AsyncSe
 class Geo(Base):
     __tablename__ = "geo"
 
+    address = relationship("Address", back_populates="geo")
     id = Column(Integer, primary_key=True, index=True)
     lat = Column(String, nullable=False)
     lng = Column(String, nullable=False)
