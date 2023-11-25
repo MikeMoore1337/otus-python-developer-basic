@@ -16,7 +16,7 @@
 import asyncio
 
 from jsonplaceholder_requests import fetch_posts_data, fetch_users_data
-from models import Base, Post, Session, User, engine
+from models import Base, Post, AsyncSession, User, engine
 
 
 async def init_db():
@@ -25,7 +25,7 @@ async def init_db():
 
 
 async def add_data_to_db(users_data, posts_data):
-    async with Session() as session:
+    async with AsyncSession() as session:
         async with session.begin():
             for user_data in users_data:
                 user = User(**user_data)
