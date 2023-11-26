@@ -35,19 +35,9 @@ class User(Base):
     website = Column(String, nullable=True)
     company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
     address_id = Column(Integer, ForeignKey("addresses.id"), nullable=False)
-
     address = relationship("Address", back_populates="user")
     company = relationship("Company", back_populates="user")
     posts = relationship("Post", back_populates="user")
-
-    def __init__(self, name, username, email, phone, website, company_id, address_id):
-        self.name = name
-        self.username = username
-        self.email = email
-        self.phone = phone
-        self.website = website
-        self.company_id = company_id
-        self.address_id = address_id
 
 
 class Post(Base):
