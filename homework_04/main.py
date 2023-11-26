@@ -15,110 +15,39 @@
 
 import asyncio
 
-from jsonplaceholder_requests import fetch_posts_data, fetch_users_data
+from aiohttp import ClientSession
 
-from homework_04.models import (
-    Address,
-    AsyncSession,
-    Base,
-    Post,
-    User,
-    async_session,
-    engine,
-)
+from jsonplaceholder_requests import POSTS_DATA_URL, USERS_DATA_URL
+from models import Base, Post, AsyncSession, User, engine
 
 
-async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-
-
-async def fetch_data_and_add_to_db(session, users_data, posts_data):
-    user_instances = []
-    post_instances = []
-
-    for user_data in users_data:
-        # Извлекаем вложенные данные из user_data
-        address_data = user_data.pop("address", None)
-
-        # Создаем объект Address, если есть данные
-        if address_data:
-            address_instance = Address(**address_data)
-        else:
-            address_instance = None
-
-        # Создаем объект User, передавая в него address_instance
-        user_instance = User(address=address_instance, **user_data)
-        user_instances.append(user_instance)
-
-    for post_data in posts_data:
-        # Извлекаем user_id из данных поста
-        user_id = post_data.pop("userId", None)
-
-        # Если user_id есть, пытаемся получить пользователя из базы данных
-        if user_id is not None:
-            user_instance = await session.get(User, user_id)
-        else:
-            user_instance = None
-
-        # Если пользователя нет, создаем нового
-        if user_instance is None:
-            user_instance = User(**user_data)
-            session.add(user_instance)
-
-        # Создаем пост и устанавливаем связь с пользователем
-        post_instance = Post(**post_data, user=user_instance)
-        post_instances.append(post_instance)
-
-    session.add_all(user_instances + post_instances)
-    await session.commit()
-
-
-async def add_users_to_db(users_data):
-    for user_data in users_data:
-        user = User(
-            id=user_data["id"],
-            name=user_data["name"],
-            username=user_data["username"],
-            email=user_data["email"],
-        )
-        async_session.add(user)
-
-    await async_session.commit()
-
-
-async def add_posts_to_db(posts_data):
-    for post_data in posts_data:
-        post = Post(
-            id=post_data["id"],
-            user_id=post_data["userId"],
-            title=post_data["title"],
-            body=post_data["body"],
-        )
-        async_session.add(post)
-
-    await async_session.commit()
+async def fetch_data(url):
+    async with ClientSession() as session:
+        async with session.get(url) as response:
+            return await response.json()
 
 
 async def async_main():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+    users_data, posts_data = await asyncio.gather(
+        fetch_data(USERS_DATA_URL),
+        fetch_data(POSTS_DATA_URL)
+    )
+
     async with AsyncSession() as session:
-        # Инициализация базы данных
-        await init_db()
+        users = [User(**user_data) for user_data in users_data]
+        posts = [Post(**post_data) for post_data in posts_data]
 
-        # Загрузка данных и добавление их в базу данных
-        users_data, posts_data = await asyncio.gather(
-            fetch_users_data(), fetch_posts_data()
-        )
-        await fetch_data_and_add_to_db(session, users_data, posts_data)
+        # Batch insert users
+        session.bulk_save_objects(users)
+        session.commit()
 
-    # Закрытие соединения с БД
-    await async_session.close()
-
-
-def main():
-    # Запуск асинхронного цикла
-    asyncio.run(async_main())
+        # Batch insert posts
+        session.bulk_save_objects(posts)
+        session.commit()
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(async_main())
