@@ -39,6 +39,9 @@ class User(Base):
 
     posts = relationship("Post", back_populates="user")
 
+    # Определение отношения к модели Address
+    addresses = relationship('Address', back_populates='user')
+
 
 class Post(Base):
     __tablename__ = "posts"
@@ -49,3 +52,16 @@ class Post(Base):
     body = Column(String, nullable=False)
 
     user = relationship("User", back_populates="posts")
+
+
+class Address(Base):
+    __tablename__ = 'addresses'
+
+    id = Column(Integer, primary_key=True, index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    city = Column(String, nullable=False)
+    street = Column(String, nullable=False)
+    suite = Column(String, nullable=False)
+
+    # Определение обратной связи с моделью User
+    user = relationship('User', back_populates='addresses')
