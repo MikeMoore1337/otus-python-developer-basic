@@ -83,6 +83,9 @@ class Address(Base):
         "User", secondary=association_table, back_populates="addresses"
     )
 
+    geo_id = Column(Integer, ForeignKey("geo.id"))
+    geo = relationship("Geo", back_populates="address")
+
 
 class Geo(Base):
     __tablename__ = "geo"
