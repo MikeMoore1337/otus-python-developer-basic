@@ -31,10 +31,12 @@ AsyncSession = async_sessionmaker(
 )
 async_session = AsyncSession()
 
+# Связующая таблица для связи many-to-many
 association_table = Table(
     "user_address_association",
     Base.metadata,
     Column("user_id", Integer, ForeignKey("users.id")),
+    Column("post_id", Integer, ForeignKey("posts.id")),
     Column("address_id", Integer, ForeignKey("addresses.id")),
 )
 
@@ -42,12 +44,15 @@ association_table = Table(
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
 
-    posts = relationship("Post", secondary=association_table, back_populates="users")
+    # Обратная связь с использованием связующей таблицы
+    addresses = relationship(
+        "Address", secondary=association_table, back_populates="users"
+    )
 
 
 class Post(Base):
@@ -57,21 +62,20 @@ class Post(Base):
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
 
+    # Обратная связь с использованием связующей таблицы
     users = relationship("User", secondary=association_table, back_populates="posts")
-
 
 
 class Address(Base):
     __tablename__ = "addresses"
 
-    id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"))
+    id = Column(Integer, primary_key=True)
     street = Column(String, nullable=False)
     suite = Column(String, nullable=False)
     city = Column(String, nullable=False)
     zipcode = Column(String, nullable=False)
-    geo = relationship("Geo", uselist=False, back_populates="address")
 
+    # Обратная связь с использованием связующей таблицы
     users = relationship(
         "User", secondary=association_table, back_populates="addresses"
     )
