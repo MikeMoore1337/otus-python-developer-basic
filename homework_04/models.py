@@ -91,6 +91,8 @@ class Geo(Base):
     lat = Column(String, nullable=False)
     lng = Column(String, nullable=False)
 
+    address_id = Column(Integer, ForeignKey("addresses.id"))
+
     address = relationship("Address", back_populates="geo")
 
 
