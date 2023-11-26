@@ -28,7 +28,7 @@ async def async_main():
         fetch_posts_data(),
     )
 
-    async with AsyncSession() as session:
+    async with AsyncSession(bind=engine) as session:
         users = []
         posts = []
 
