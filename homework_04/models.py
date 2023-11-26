@@ -30,17 +30,20 @@ async_session = AsyncSession()
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
+    phone = Column(String, nullable=True)
+    website = Column(String, nullable=True)
+    company_id = Column(Integer, ForeignKey('companies.id'), nullable=False)
+    address_id = Column(Integer, ForeignKey('addresses.id'), nullable=False)
 
+    address = relationship('Address', back_populates='user')
+    company = relationship('Company', back_populates='user')
     posts = relationship("Post", back_populates="user")
-
-    # Определение отношения к модели Address
-    address = relationship("Address", back_populates="user")
 
 
 class Post(Base):
