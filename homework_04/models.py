@@ -10,7 +10,7 @@
 
 import os
 
-from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy import Column, ForeignKey, Integer, String, text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
@@ -27,7 +27,7 @@ Session = sessionmaker(engine, class_=AsyncSession)
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True, index=True, server_default=text("nextval('users_id_seq'::regclass)"))
     name = Column(String, nullable=False)
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
