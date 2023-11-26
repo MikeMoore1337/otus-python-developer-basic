@@ -15,20 +15,8 @@
 
 import asyncio
 
-from aiohttp import ClientSession
-from jsonplaceholder_requests import POSTS_DATA_URL, USERS_DATA_URL
-from models import AsyncSession, Base, Post, User, engine
-
-
-async def fetch_data(url):
-    try:
-        async with ClientSession() as session:
-            async with session.get(url) as response:
-                response.raise_for_status()  # Raises an exception for 4xx and 5xx status codes
-                return await response.json()
-    except Exception as e:
-        print(f"Error fetching data from {url}: {e}")
-        return []
+from jsonplaceholder_requests import fetch_posts_data, fetch_users_data
+from models import Base, Post, Session, User, engine
 
 
 async def async_main():
@@ -36,18 +24,21 @@ async def async_main():
         await conn.run_sync(Base.metadata.create_all)
 
     users_data, posts_data = await asyncio.gather(
-        fetch_data(USERS_DATA_URL), fetch_data(POSTS_DATA_URL)
+        fetch_users_data(),
+        fetch_posts_data(),
     )
 
-    async with AsyncSession() as session:
+    async with Session() as session:
         users = [User(**user_data) for user_data in users_data]
         posts = [Post(**post_data) for post_data in posts_data]
 
         # Batch insert users
-        await session.execute(User.__table__.insert().values(users))
+        session.bulk_save_objects(users)
+        session.commit()
 
         # Batch insert posts
-        await session.execute(Post.__table__.insert().values(posts))
+        session.bulk_save_objects(posts)
+        session.commit()
 
 
 def main():
