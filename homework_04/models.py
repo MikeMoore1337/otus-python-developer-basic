@@ -40,7 +40,7 @@ class User(Base):
     posts = relationship("Post", back_populates="user")
 
     # Определение отношения к модели Address
-    address = relationship('Address', back_populates='user')
+    address = relationship("Address", back_populates="user")
 
 
 class Post(Base):
@@ -54,14 +54,32 @@ class Post(Base):
     user = relationship("User", back_populates="posts")
 
 
-class Address(Base):
-    __tablename__ = 'addresses'
+class Geo(Base):
+    __tablename__ = "geos"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    city = Column(String, nullable=False)
+    lat = Column(String, nullable=False)
+    lng = Column(String, nullable=False)
+
+
+class Address(Base):
+    __tablename__ = "addresses"
+
+    id = Column(Integer, primary_key=True, index=True)
     street = Column(String, nullable=False)
     suite = Column(String, nullable=False)
+    city = Column(String, nullable=False)
+    zipcode = Column(String, nullable=False)
+    geo_id = Column(Integer, ForeignKey("geos.id"), nullable=False)
 
-    # Определение обратной связи с моделью User
-    user = relationship('User', back_populates='addresses')
+    geo = relationship("Geo", back_populates="address")
+    user = relationship("User", back_populates="address")
+
+
+class Company(Base):
+    __tablename__ = "companies"
+
+    id = Column(Integer, primary_key=True, index=True)
+    name = Column(String, nullable=False)
+    catch_phrase = Column(String, nullable=False)
+    bs = Column(String, nullable=False)
