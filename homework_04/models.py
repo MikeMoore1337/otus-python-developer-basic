@@ -49,20 +49,18 @@ class User(Base):
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
 
-    # Обратная связь с использованием связующей таблицы
-    addresses = relationship(
-        "Address", secondary=association_table, back_populates="users"
-    )
+    # Связь many-to-many с Post
+    posts = relationship("Post", secondary=association_table, back_populates="users")
 
 
 class Post(Base):
     __tablename__ = "posts"
 
-    id = Column(Integer, primary_key=True, index=True)
+    id = Column(Integer, primary_key=True)
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
 
-    # Обратная связь с использованием связующей таблицы
+    # Связь many-to-many с User
     users = relationship("User", secondary=association_table, back_populates="posts")
 
 
