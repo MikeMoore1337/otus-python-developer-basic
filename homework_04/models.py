@@ -64,6 +64,8 @@ class Geo(Base):
     lat = Column(String, nullable=False)
     lng = Column(String, nullable=False)
 
+    address = relationship('Address', back_populates='geo')
+
 
 class Address(Base):
     __tablename__ = "addresses"
