@@ -40,7 +40,7 @@ class User(Base):
     posts = relationship("Post", back_populates="user")
 
     # Определение отношения к модели Address
-    addresses = relationship('Address', back_populates='user')
+    address = relationship('Address', back_populates='user')
 
 
 class Post(Base):
