@@ -80,9 +80,11 @@ class Address(Base):
 
 
 class Company(Base):
-    __tablename__ = "companies"
+    __tablename__ = 'companies'
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     catch_phrase = Column(String, nullable=False)
     bs = Column(String, nullable=False)
+
+    user = relationship('User', back_populates='company')
