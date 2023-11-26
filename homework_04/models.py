@@ -9,10 +9,10 @@
 """
 
 import os
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
+
+from sqlalchemy import Column, ForeignKey, Integer, String
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
+from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 PG_CONN_URI = os.environ.get("SQLALCHEMY_PG_CONN_URI") or "postgresql+asyncpg://postgres:password@localhost/postgres"
 
