@@ -16,36 +16,42 @@
 import asyncio
 
 from jsonplaceholder_requests import fetch_posts_data, fetch_users_data
-from models import AsyncBase, Post, User, engine
-
-
-async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(AsyncBase.metadata.create_all)
-
-
-async def add_data_to_db(users_data, posts_data):
-    async with AsyncBase() as session:
-        async with session.begin():
-            for user_data in users_data:
-                user = User(**user_data)
-                session.add(user)
-
-            for post_data in posts_data:
-                post = Post(**post_data)
-                session.add(post)
+from models import AsyncSession, Base, Post, User, engine
 
 
 async def async_main():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
     users_data, posts_data = await asyncio.gather(
         fetch_users_data(),
         fetch_posts_data(),
     )
 
-    await init_db()
-    await add_data_to_db(users_data, posts_data)
+    async with AsyncSession(bind=engine) as session:
+        users = [
+            User(
+                id=user_data["id"],
+                name=user_data["name"],
+                username=user_data["username"],
+                email=user_data["email"],
+            )
+            for user_data in users_data
+        ]
 
-    print("Data added to the database")
+        posts = [
+            Post(
+                id=post_data["id"],
+                user_id=post_data["userId"],
+                title=post_data["title"],
+                body=post_data["body"],
+            )
+            for post_data in posts_data
+        ]
+
+        session.add_all(users)
+        session.add_all(posts)
+        await session.commit()
 
 
 def main():

@@ -1,3 +1,3 @@
-from utils import add_homework_path
+from testing.helpers.utils import add_homework_path
 
 add_homework_path(__file__)
