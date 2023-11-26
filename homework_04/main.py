@@ -60,10 +60,10 @@ async def async_main():
             )
             posts.append(post)
 
-        session.bulk_save_objects(users)
+        session.add_all(users)
         await session.commit()
 
-        session.bulk_save_objects(posts)
+        session.add_all(posts)
         await session.commit()
 
 
