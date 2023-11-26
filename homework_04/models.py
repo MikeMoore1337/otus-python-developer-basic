@@ -52,6 +52,11 @@ class User(Base):
     # Связь many-to-many с Post
     posts = relationship("Post", secondary=association_table, back_populates="users")
 
+    # Связь many-to-many с Address
+    addresses = relationship(
+        "Address", secondary=association_table, back_populates="users"
+    )
+
 
 class Post(Base):
     __tablename__ = "posts"
