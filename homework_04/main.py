@@ -18,6 +18,10 @@ import asyncio
 from aiohttp import ClientSession
 from jsonplaceholder_requests import POSTS_DATA_URL, USERS_DATA_URL
 from models import AsyncSession, Base, Post, User, engine
+from sqlalchemy import select
+from sqlalchemy.orm import joinedload, selectinload
+
+from testing.test_homework_04.test_main import check_data_match
 
 
 async def fetch_data(url):
@@ -44,13 +48,58 @@ async def async_main():
         posts = [Post(**post_data) for post_data in posts_data]
 
         # Batch insert users
-        session.bulk_save_objects(users)
-        session.commit()
+        await session.execute(User.__table__.insert().values(users))
 
         # Batch insert posts
-        session.bulk_save_objects(posts)
-        session.commit()
+        await session.execute(Post.__table__.insert().values(posts))
+
+
+async def test_main(users_data, posts_data):
+    await async_main()
+
+    stmt_query_users = select(User).options(selectinload(User.posts))
+    stmt_query_posts = select(Post).options(joinedload(Post.user))
+
+    users = []
+    posts = []
+
+    async with AsyncSession() as session:
+        res_users = await session.execute(stmt_query_users)
+        res_posts = await session.execute(stmt_query_posts)
+
+        users.extend(res_users.scalars())
+        posts.extend(res_posts.scalars())
+
+    assert len(posts) == len(posts_data)
+
+    check_data_match(
+        users,
+        users_data,
+        args_mapping=dict(
+            name="name",
+            username="username",
+            email="email",
+        ),
+    )
+    check_data_match(
+        posts,
+        posts_data,
+        args_mapping=dict(
+            user_id="userId",
+            title="title",
+            body="body",
+        ),
+    )
+
+    for post in posts:
+        # check relationships
+        assert post.user in users
+        assert post in post.user.posts
+
+
+def main():
+    asyncio.run(async_main())
 
 
 if __name__ == "__main__":
-    asyncio.run(async_main())
+    main()

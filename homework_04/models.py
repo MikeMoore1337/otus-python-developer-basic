@@ -30,7 +30,7 @@ async_session = AsyncSession()
 
 
 class User(Base):
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
@@ -38,11 +38,11 @@ class User(Base):
     email = Column(String, nullable=False)
     phone = Column(String, nullable=True)
     website = Column(String, nullable=True)
-    company_id = Column(Integer, ForeignKey('companies.id'), nullable=False)
-    address_id = Column(Integer, ForeignKey('addresses.id'), nullable=False)
+    company_id = Column(Integer, ForeignKey("companies.id"), nullable=False)
+    address_id = Column(Integer, ForeignKey("addresses.id"), nullable=False)
 
-    address = relationship('Address', back_populates='user')
-    company = relationship('Company', back_populates='user')
+    address = relationship("Address", back_populates="user")
+    company = relationship("Company", back_populates="user")
     posts = relationship("Post", back_populates="user")
 
 
@@ -64,7 +64,7 @@ class Geo(Base):
     lat = Column(String, nullable=False)
     lng = Column(String, nullable=False)
 
-    address = relationship('Address', back_populates='geo')
+    address = relationship("Address", back_populates="geo")
 
 
 class Address(Base):
@@ -82,11 +82,11 @@ class Address(Base):
 
 
 class Company(Base):
-    __tablename__ = 'companies'
+    __tablename__ = "companies"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, nullable=False)
     catch_phrase = Column(String, nullable=False)
     bs = Column(String, nullable=False)
 
-    user = relationship('User', back_populates='company')
+    user = relationship("User", back_populates="company")
