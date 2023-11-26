@@ -29,40 +29,35 @@ async def async_main():
     )
 
     async with AsyncSession(bind=engine) as session:
-        users = []
-        posts = []
-
-        # Создание пользователей
-        for user_data in users_data:
-            user = User(
-                id=user_data.get("id"),
+        users = [
+            User(
+                id=user_data["id"],
                 name=user_data["name"],
                 username=user_data["username"],
                 email=user_data["email"],
                 phone=user_data.get("phone"),
                 website=user_data.get("website"),
                 company_id=user_data["company"].get("id")
-                if user_data.get("company")
+                if "company" in user_data
                 else None,
                 address_id=user_data["address"].get("id")
-                if user_data.get("address")
+                if "address" in user_data
                 else None,
             )
-            users.append(user)
+            for user_data in users_data
+        ]
 
-        # Создание постов
-        for post_data in posts_data:
-            post = Post(
-                id=post_data.get("id"),
+        posts = [
+            Post(
+                id=post_data["id"],
                 user_id=post_data["userId"],
                 title=post_data["title"],
                 body=post_data["body"],
             )
-            posts.append(post)
+            for post_data in posts_data
+        ]
 
         session.add_all(users)
-        await session.commit()
-
         session.add_all(posts)
         await session.commit()
 
