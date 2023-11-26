@@ -29,46 +29,33 @@ async def async_main():
     )
 
     async with Session() as session:
-        users = []
-        posts = []
-
         # Создание пользователей
+        users_mapping = {}
         for user_data in users_data:
             user = User(
-                id=user_data["id"],
-                name=user_data["name"],
-                username=user_data["username"],
-                email=user_data["email"],
-                phone=user_data["phone"],
-                website=user_data["website"],
-                company_id=user_data["company"]["id"],
-                address_id=user_data["address"]["id"],
+                id=user_data.get("id"),
+                name=user_data.get("name"),
+                username=user_data.get("username"),
+                email=user_data.get("email"),
+                phone=user_data.get("phone"),
+                website=user_data.get("website"),
             )
-            users.append(user)
+            session.add(user)
+            users_mapping[user.id] = user
 
         # Создание постов
         for post_data in posts_data:
             post = Post(
-                id=post_data["id"],
-                user_id=post_data["userId"],
-                title=post_data["title"],
-                body=post_data["body"],
+                id=post_data.get("id"),
+                user_id=post_data.get("userId"),
+                title=post_data.get("title"),
+                body=post_data.get("body"),
             )
-            posts.append(post)
+            user_id = post_data.get("userId")
+            if user_id in users_mapping:
+                post.user = users_mapping[user_id]
+            session.add(post)
 
-        # Установка связей
-        for post in posts:
-            user_id = post.user_id
-            user = next((u for u in users if u.id == user_id), None)
-            if user:
-                post.user = user
-
-        # Batch insert users
-        session.bulk_save_objects(users)
-        session.commit()
-
-        # Batch insert posts
-        session.bulk_save_objects(posts)
         session.commit()
 
 
