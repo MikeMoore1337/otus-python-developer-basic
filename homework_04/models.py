@@ -15,8 +15,8 @@ from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import declarative_base, relationship, sessionmaker
 
 PG_CONN_URI = (
-        os.environ.get("SQLALCHEMY_PG_CONN_URI")
-        or "postgresql+asyncpg://postgres:password@localhost/postgres"
+    os.environ.get("SQLALCHEMY_PG_CONN_URI")
+    or "postgresql+asyncpg://postgres:password@localhost/postgres"
 )
 
 Base = declarative_base()
@@ -43,38 +43,3 @@ class Post(Base):
     body = Column(String, nullable=False)
 
     user = relationship("User", back_populates="posts")
-#
-#
-# class Geo(Base):
-#     __tablename__ = "geos"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     lat = Column(String, nullable=False)
-#     lng = Column(String, nullable=False)
-#
-#     address = relationship("Address", back_populates="geo")
-#
-#
-# class Address(Base):
-#     __tablename__ = "addresses"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     street = Column(String, nullable=False)
-#     suite = Column(String, nullable=False)
-#     city = Column(String, nullable=False)
-#     zipcode = Column(String, nullable=False)
-#     geo_id = Column(Integer, ForeignKey("geos.id"), nullable=False)
-#
-#     geo = relationship("Geo", back_populates="address")
-#     user = relationship("User", back_populates="address")
-#
-#
-# class Company(Base):
-#     __tablename__ = "companies"
-#
-#     id = Column(Integer, primary_key=True, index=True)
-#     name = Column(String, nullable=False)
-#     catch_phrase = Column(String, nullable=False)
-#     bs = Column(String, nullable=False)
-#
-#     user = relationship("User", back_populates="company")
