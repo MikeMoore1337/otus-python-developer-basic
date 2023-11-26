@@ -37,12 +37,16 @@ async def async_main():
                 email=user_data["email"],
                 phone=user_data.get("phone"),
                 website=user_data.get("website"),
-                company_id=user_data["company"]["id"]
-                if "company" in user_data and "id" in user_data["company"]
-                else None,
-                address_id=user_data["address"]["id"]
-                if "address" in user_data and "id" in user_data["address"]
-                else None,
+                company_id=(
+                    user_data["company"]["id"]
+                    if "company" in user_data and "id" in user_data["company"]
+                    else None
+                ),
+                address_id=(
+                    user_data["address"]["id"]
+                    if "address" in user_data and "id" in user_data["address"]
+                    else None
+                ),
             )
             for user_data in users_data
         ]
