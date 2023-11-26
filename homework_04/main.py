@@ -16,7 +16,7 @@
 import asyncio
 
 from jsonplaceholder_requests import fetch_posts_data, fetch_users_data
-from models import Base, Post, Session, User, engine
+from models import AsyncSession, Base, Post, User, engine
 
 
 async def async_main():
@@ -28,35 +28,39 @@ async def async_main():
         fetch_posts_data(),
     )
 
-    async with Session() as session:
+    async with AsyncSession() as session:
+        users = []
+        posts = []
+
         # Создание пользователей
-        users_mapping = {}
         for user_data in users_data:
             user = User(
-                id=user_data.get("id"),
-                name=user_data.get("name"),
-                username=user_data.get("username"),
-                email=user_data.get("email"),
-                phone=user_data.get("phone"),
-                website=user_data.get("website"),
+                id=user_data["id"],
+                name=user_data["name"],
+                username=user_data["username"],
+                email=user_data["email"],
+                phone=user_data["phone"],
+                website=user_data["website"],
+                company_id=user_data["company"]["id"],
+                address_id=user_data["address"]["id"],
             )
-            session.add(user)
-            users_mapping[user.id] = user
+            users.append(user)
 
         # Создание постов
         for post_data in posts_data:
             post = Post(
-                id=post_data.get("id"),
-                user_id=post_data.get("userId"),
-                title=post_data.get("title"),
-                body=post_data.get("body"),
+                id=post_data["id"],
+                user_id=post_data["userId"],
+                title=post_data["title"],
+                body=post_data["body"],
             )
-            user_id = post_data.get("userId")
-            if user_id in users_mapping:
-                post.user = users_mapping[user_id]
-            session.add(post)
+            posts.append(post)
 
-        session.commit()
+        session.bulk_save_objects(users)
+        await session.commit()
+
+        session.bulk_save_objects(posts)
+        await session.commit()
 
 
 def main():
