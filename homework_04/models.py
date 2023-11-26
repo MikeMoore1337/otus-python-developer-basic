@@ -84,7 +84,7 @@ class Address(Base):
     )
 
     geo_id = Column(Integer, ForeignKey("geo.id"))
-    geo = relationship("Geo", back_populates="address")
+    geo = relationship("Geo", back_populates="address", foreign_keys=[geo_id])
 
 
 class Geo(Base):
