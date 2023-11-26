@@ -48,22 +48,17 @@ class User(Base):
     email = Column(String, nullable=False)
 
     posts = relationship("Post", secondary=association_table, back_populates="users")
-    addresses = relationship(
-        "Address", secondary=association_table, back_populates="users"
-    )
-    company_id = Column(Integer, ForeignKey("companies.id"))
-    company = relationship("Company", uselist=False, back_populates="user")
 
 
 class Post(Base):
     __tablename__ = "posts"
 
     id = Column(Integer, primary_key=True, index=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
 
-    user = relationship("User", secondary=association_table, back_populates="posts")
+    users = relationship("User", secondary=association_table, back_populates="posts")
+
 
 
 class Address(Base):
