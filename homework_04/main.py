@@ -45,11 +45,11 @@ async def async_main():
 
         # Batch insert users
         session.bulk_save_objects(users)
-        await session.commit()
+        session.commit()
 
         # Batch insert posts
         session.bulk_save_objects(posts)
-        await session.commit()
+        session.commit()
 
 
 if __name__ == "__main__":
