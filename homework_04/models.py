@@ -31,6 +31,13 @@ AsyncSession = async_sessionmaker(
 )
 async_session = AsyncSession()
 
+association_table = Table(
+    "user_address_association",
+    Base.metadata,
+    Column("user_id", Integer, ForeignKey("users.id")),
+    Column("address_id", Integer, ForeignKey("addresses.id")),
+)
+
 
 class User(Base):
     __tablename__ = "users"
@@ -40,8 +47,10 @@ class User(Base):
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
 
-    posts = relationship("Post", back_populates="user")
-    address = relationship("Address", uselist=False, back_populates="user")
+    posts = relationship("Post", secondary=association_table, back_populates="users")
+    addresses = relationship(
+        "Address", secondary=association_table, back_populates="users"
+    )
     company_id = Column(Integer, ForeignKey("companies.id"))
     company = relationship("Company", uselist=False, back_populates="user")
 
@@ -54,7 +63,7 @@ class Post(Base):
     title = Column(String, nullable=False)
     body = Column(String, nullable=False)
 
-    user = relationship("User", back_populates="posts")
+    user = relationship("User", secondary=association_table, back_populates="posts")
 
 
 class Address(Base):
@@ -68,7 +77,9 @@ class Address(Base):
     zipcode = Column(String, nullable=False)
     geo = relationship("Geo", uselist=False, back_populates="address")
 
-    user = relationship("User", back_populates="address")
+    users = relationship(
+        "User", secondary=association_table, back_populates="addresses"
+    )
 
 
 class Geo(Base):
