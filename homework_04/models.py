@@ -27,7 +27,7 @@ Session = sessionmaker(engine, class_=AsyncSession)
 class User(Base):
     __tablename__ = "users"
 
-    id = Column(Integer, primary_key=True, index=True, server_default=text("nextval('users_id_seq'::regclass)"))
+    id = Column(Integer, primary_key=True, autoincrement=True, index=True)
     name = Column(String, nullable=False)
     username = Column(String, nullable=False)
     email = Column(String, nullable=False)
