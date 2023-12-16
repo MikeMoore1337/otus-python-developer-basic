@@ -1,7 +1,7 @@
 import asyncio
 
-from jsonplaceholder_requests import fetch_posts_data, fetch_users_data
-from models import AsyncSession, Base, Post, User, engine
+from tmp.trash.jsonplaceholder_requests import fetch_posts_data, fetch_users_data
+from tmp.trash.models import AsyncSession, Base, Post, User, engine
 
 
 async def async_main():
