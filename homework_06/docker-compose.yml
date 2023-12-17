@@ -1,47 +1,20 @@
 version: '3'
-
 services:
   db:
     image: postgres:latest
     environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      PGDATA: var/lib/postgresql/data/
-    volumes:
-      - ./data:/var/lib/postgresql/data/
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
     ports:
       - "5432:5432"
-#    networks:
-#      - my_network
 
-  app:
+  web:
     build:
-      dockerfile: ./docker-build/Dockerfile
+      dockerfile: docker-build/Dockerfile
       context: ./
-
-#  web:
-#    build: .
-#    command: gunicorn -w 4 -b 127.0.0.1:8000 myapp:app
-#    volumes:
-#      - ./myapp:/app
-#    ports:
-#      - "8000:8000"
-#    depends_on:
-#      - db
-#    networks:
-#      - my_network
-#
-#  nginx:
-#    image: nginx
-#    ports:
-#      - "80:80"
-#    volumes:
-#      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-#    depends_on:
-#      - web
-#    networks:
-#      - my_network
-#
-#networks:
-#  my_network:
+    image: flask-app:latest
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
