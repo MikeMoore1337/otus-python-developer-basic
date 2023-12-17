@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Список желаний{% endblock %}
+
+{% block content %}
+<h1>Список желаний</h1>
+<p>Они обязательно сбудутся*</p>
+<ul class="list-group">
+    {% for record in records %}
+    <li class="list-group-item">
+        {{ record.content }}
+        <form method="post" action="{{ url_for('view_records') }}">
+            <input type="hidden" name="record_id" value="{{ record.id }}">
+            <button type="submit" class="btn btn-danger">Удалить желание</button>
+        </form>
+    </li>
+    {% endfor %}
+</ul>
+<p>*но это не точно</p>
+{% endblock %}
