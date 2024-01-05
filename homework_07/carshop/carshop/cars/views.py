@@ -6,4 +6,4 @@ from .models import Car
 
 def cars(request):
     car = Car.objects.all()
-    return render(request, 'cars/catalog.html', {'cars': car})
+    return render(request, "cars/catalog.html", {"cars": car})
