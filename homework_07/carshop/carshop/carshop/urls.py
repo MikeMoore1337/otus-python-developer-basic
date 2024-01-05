@@ -20,8 +20,7 @@ from django.urls import include, path
 from .views import home
 
 urlpatterns = [
-    path("admin/", admin.site.urls),
+    path("admin/", admin.site.urls, name="admin"),
     path("cars/", include("cars.urls")),
     path("", home, name="home"),
-    # Другие URL-шаблоны, если они есть
 ]
