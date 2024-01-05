@@ -80,7 +80,7 @@
 <main class="container mt-4">
     <ul>
         {% for car in cars %}
-            <li>{{ car.brand }} {{ car.model }} {{ car.year }} - ${{ car.price }}</li>
+            <li>{{ car.brand }} {{ car.model }} {{ car.year }} {{ car.year }} - ${{ car.price }}</li>
         {% endfor %}
     </ul>
     <a href="{% url 'home' %}" class="back-btn">Back to Home</a>
