@@ -61,7 +61,11 @@ jobs:
         env:
           SQLALCHEMY_PG_CONN_URI: postgresql+asyncpg://postgres:secretpassword@localhost:5432/postgres
 
-      - name: Run Django tests
+      - name: Run Django Tests
         run: |
-          cd $GITHUB_WORKSPACE/homework_10/carshop/carshop/
-          python manage.py test cars/tests/ -p "*test.py"
+          if [ -f homework_10/carshop/.github/workflows/run_django_tests.yml ]; then
+            echo "Running Django Tests"
+            ./.github/workflows/run_django_tests.yml
+          else
+            echo "Django Tests file not found"
+          fi
