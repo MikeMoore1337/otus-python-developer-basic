@@ -63,5 +63,5 @@ jobs:
 
       - name: Run Django tests
         run: |
-          cd /homework_10/carshop/carshop/
+          cd $GITHUB_WORKSPACE/homework_10/carshop/carshop/
           python manage.py test cars/tests/ -p "*test.py"
