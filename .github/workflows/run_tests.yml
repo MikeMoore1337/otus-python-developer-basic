@@ -69,3 +69,4 @@ jobs:
       - name: Run Django tests
         run: |
           python /homework_10/carshop/carshop/manage.py test /homework_10/carshop/carshop/cars/tests/test.py
+        working-directory: /otus-python-developer-basic/homework_10/carshop/carshop/
