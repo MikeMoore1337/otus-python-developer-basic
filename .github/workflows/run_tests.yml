@@ -60,6 +60,12 @@ jobs:
           pytest testing -s -vv -rsx
         env:
           SQLALCHEMY_PG_CONN_URI: postgresql+asyncpg://postgres:secretpassword@localhost:5432/postgres
+
+      - uses: actions/checkout@v3
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
       - name: Run Django tests
         run: |
           python /homework_10/carshop/carshop/manage.py test /homework_10/carshop/carshop/cars/tests/test.py
